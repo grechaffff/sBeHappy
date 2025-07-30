@@ -10,6 +10,8 @@ private:
     asio::io_context io_context;
     tcp_server server;
 
+    pqxx_wrapper db; // pqxx_wrapper = database
+
 public:
     application();
     
