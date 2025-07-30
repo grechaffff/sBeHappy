@@ -12,6 +12,10 @@ private:
 
     pqxx_wrapper db; // pqxx_wrapper = database
 
+    std::shared_ptr<beast::http::response<beast::http::string_body>> invoker(
+        std::shared_ptr<beast::http::request<beast::http::string_body>> request
+    );
+
 public:
     application();
     
