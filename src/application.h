@@ -4,6 +4,7 @@
 
 #include "./tcp_server.h"
 #include "./database.h"
+#include "./authorization_service.h"
 
 class application {
 private:
@@ -11,6 +12,8 @@ private:
     tcp_server server;
 
     pqxx_wrapper db; // pqxx_wrapper = database
+
+    authorization_service auth_service;
 
     std::shared_ptr<beast::http::response<beast::http::string_body>> invoker(
         std::shared_ptr<beast::http::request<beast::http::string_body>> request
@@ -21,9 +24,6 @@ public:
     
     application(const application&) = delete;
     application& operator=(const application&) = delete;
-
-    application(application&&) = default;
-    application& operator=(application&&) = default;
     
     int execute();
 };

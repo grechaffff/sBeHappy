@@ -31,9 +31,6 @@ public:
     pqxx_wrapper(const pqxx_wrapper&) = delete;
     pqxx_wrapper& operator=(const pqxx_wrapper&) = delete;
 
-    pqxx_wrapper(pqxx_wrapper&&) = default;
-    pqxx_wrapper& operator=(pqxx_wrapper&&) = default;
-
     pqxx::work& get_transaction() {
         return transaction; 
     }

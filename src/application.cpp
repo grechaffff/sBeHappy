@@ -1,10 +1,5 @@
 #include "./application.h"
 
-#include <bcrypt/BCrypt.hpp>
-
-#include <nlohmann/json.hpp>
-using json = nlohmann::json;
-
 // invoker_t
 std::shared_ptr<beast::http::response<beast::http::string_body>> application::invoker(
     std::shared_ptr<beast::http::request<beast::http::string_body>> request
@@ -28,25 +23,12 @@ std::shared_ptr<beast::http::response<beast::http::string_body>> application::in
         if (!(request->method_string() == "POST" && (*request)[beast::http::field::content_type] == "application/json")) {
             return set_response("Incorrect request! use /api to get help", beast::http::status::bad_request);
         }
-        if (!json::accept(request->body())) {
-            return set_response("Incorrect json! use /api to get help", beast::http::status::bad_request);
-        }
-
-        auto data = json::parse(request->body());
-        if (!(data.contains("username") && data.contains("email") && data.contains("password"))) {
-            return set_response("Incorrect json! use /api to get help", beast::http::status::bad_request);
-        }
-
-        std::string username = data["username"];
-        std::string email = data["email"];
-        std::string password_hash = BCrypt::generateHash(data["password"]);
-
+        
         try {
-            db().exec("INSERT INTO users(username, email, password_hash) VALUES($1, $2, $3);", pqxx::params(username, email, password_hash));
-            db.commit();
+            auth_service.register_(request->body());
         }
-        catch (...) {
-            return set_response("Incorrect data!", beast::http::status::bad_request);
+        catch (const std::exception& e) {
+            return set_response(std::string(e.what()) +  " use /api to get help");
         }
 
         return set_response("Successful registration!");
@@ -68,7 +50,10 @@ std::shared_ptr<beast::http::response<beast::http::string_body>> application::in
 }
 
 application::application()
-    : server(io_context, 8443, std::bind(&application::invoker, this, std::placeholders::_1)), db("sBeHappy") {}
+    : io_context()
+    , server(io_context, 8443, std::bind(&application::invoker, this, std::placeholders::_1))
+    , db("sBeHappy")
+    , auth_service(db, "users") {}
 
 int application::execute() try {
     std::cout << "SSL server listening on port 8443..." << std::endl;
