@@ -30,13 +30,14 @@ public:
         std::string email = data["email"];
         std::string password_hash = BCrypt::generateHash(data["password"]);
 
+        auto transaction = db.get_transaction();
         try {
-            auto& transaction = db.get_transaction();
             transaction.exec(std::string("INSERT INTO ") + user_table_name +  "(username, email, password_hash) VALUES($1, $2, $3);", 
                 pqxx::params(username, email, password_hash));
             transaction.commit();
         }
-        catch (const std::exception&) {
+        catch (const std::exception& e) {
+            transaction.abort();
             throw std::runtime_error("Incorrect data!");
         }
     }
