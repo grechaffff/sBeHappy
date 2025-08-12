@@ -52,7 +52,7 @@ std::shared_ptr<beast::http::response<beast::http::string_body>> application::in
 application::application()
     : io_context()
     , server(io_context, 8443, std::bind(&application::invoker, this, std::placeholders::_1))
-    , db("sBeHappy")
+    , db("sBeHappy", "postgres", "host=postgres user=postgres")
     , auth_service(db, "users") {}
 
 int application::execute() try {

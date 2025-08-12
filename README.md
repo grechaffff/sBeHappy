@@ -1,41 +1,60 @@
 # Marketplace MVP Server (C++)
 
-Простой сервер для MVP маркетплейса на C++
+A minimal viable product (MVP) server for a marketplace, implemented in C++ with PostgreSQL and Docker.
 
-## Структура проекта
+## Project structure
 ```
 project/
-├── CMakeLists.txt - Конфигурация сборки проекта
-├── src/ - Исходные файлы сервера
-│ ├── main.cpp - Точка входа
-│ ├── CMakeLists.txt - Конфигурация сборки приложения
-│ ├── ...
-└── tests/ - Тесты
-│ ├── CMakeLists.txt - Конфигурация тестов
-│ ├── ...
+├── CMakeLists.txt           # Top-level build configuration (application + tests)
+├── Dockerfile               # Dockerfile for the application service
+├── src/                     # Application source code
+│   ├── main.cpp             # Entry point
+│   ├── CMakeLists.txt       # Application build config
+│   └── ...
+├── tests/                   # Test suite
+│   ├── CMakeLists.txt       # Test build config
+│   └── ...
+└── postgres/                # PostgreSQL service files
+    └── ...
 ```
 
-## Требования
+## Requirements
+- Docker
 
-- C++20 или новее
+#### Application service(these components are installed in Dockerfile)
+- C++20 or newer
 - CMake 3.10+
-- Boost Asio
-- pqxx 7.0 и выше
+- Boost(Asio, Beast)
+- OpenSSL(need for Boost.Asio)
+- libpqxx ≥ 7.0
 - libbcrypt
 - nlohmann/json
 
-## Сборка
+#### Postgres service
+- PostgreSQL 16.x  
+- Database `sBeHappy` with table `users`:
+```SQL
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY, 
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(100) NOT NULL
+);
+```
+## Build and Run
+Clone the repository, build the Docker containers, and start the services with:
 
 ```bash
-mkdir build && cd build
-cmake ..
-make
+git clone https://github.com/grechaffff/sBeHappy.git
+cd sBeHappy
+docker-compose build
+docker-compose up
 ```
+This will start both the PostgreSQL database and the C++ application server. The application will automatically connect to the database once it is ready.
 
-## База данных
-
-Проект использует postgres базу данных sBeHappy(таблицу users для пользователей). Тутор для Linux:
-```bash
-psql --dbname=postgres -c"CREATE DATABASE sBeHappy" # создание базы данных
-psql --dbname=sBeHappy -c"CREATE TABLE users (id SERIAL PRIMARY KEY, created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP, username VARCHAR(100) UNIQUE NOT NULL, email VARCHAR(100) UNIQUE NOT NULL, password_hash INT NOT NULL);" # создание таблицы для пользователей
-```
+## Additional Information
+- The application uses `Boost.Asio` for asynchronous networking.
+- Database connections are handled using `libpqxx`.
+- Passwords are hashed with `libbcrypt` for security.
+- `nlohmann/json` is used to exchange JSON data between the client and the server.
