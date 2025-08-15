@@ -10,6 +10,7 @@ target_link_libraries(${PROJECT_LIBRARY_NAME}
     Boost::system
     OpenSSL::SSL
     bcrypt
+    spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32>
 )
 
 add_executable(${CMAKE_PROJECT_NAME} main.cpp)

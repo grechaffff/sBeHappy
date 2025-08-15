@@ -29,6 +29,7 @@ project/
 - libpqxx ≥ 7.0
 - libbcrypt
 - nlohmann/json
+- spdlog
 
 #### Postgres service
 - PostgreSQL 16.x  

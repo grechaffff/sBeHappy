@@ -1,5 +1,7 @@
 #include "./tcp_server.h"
 
+#include <spdlog/spdlog.h>
+
 tcp_server::tcp_server(asio::io_context& io_context, unsigned short port, std::function<invoker_t> invoker)
     : context_(ssl::context::tlsv13)
     , acceptor_(io_context, tcp::endpoint(tcp::v4(), port))
@@ -33,8 +35,14 @@ void tcp_server::do_accept() {
                         if (!ec) {
                             // After a successful handshake, we process the connection
                             handle_connection(ssl_socket);
-                        } else {
-                            std::cerr << "Handshake failed: " << ec.message() << "\n";
+                        }
+                        else if (ec == boost::asio::ssl::error::stream_truncated) {
+                            // Do nothing
+                            // This is not a bug, but a feature of TLS.
+                            // Many browsers and HTTP libraries do not perform a full TLS shutdown for the sake of speed.
+                        }
+                        else {
+                            spdlog::error("Handshake failed: {}.", ec.message());
                         }
                     });
             }
@@ -67,7 +75,7 @@ void tcp_server::handle_connection(std::shared_ptr<ssl::stream<tcp::socket>> ssl
                     [ssl_socket, response](boost::system::error_code ec, size_t) {
                         // Closing the connection after sending the response
                         if (ec) {
-                            std::cerr << "Write failed: " << ec.message() << "\n";
+                            spdlog::error("Write failed: {}.", ec.message());
                         }
                     });
             }

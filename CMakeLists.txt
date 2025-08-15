@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Boost 1.66.0 REQUIRED COMPONENTS system)
 find_package(OpenSSL REQUIRED)
 find_package(PostgreSQL REQUIRED)
+find_package(spdlog REQUIRED)
 
 add_subdirectory(src)
 

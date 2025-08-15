@@ -1,10 +1,13 @@
 #include "./application.h"
 
+#include <spdlog/spdlog.h>
+
 // invoker_t
 std::shared_ptr<beast::http::response<beast::http::string_body>> application::invoker(
     std::shared_ptr<beast::http::request<beast::http::string_body>> request
 ) {
-    std::cout << "Received: " << request->method() << " " << request->target() << " " << request->body() << std::endl;
+    spdlog::info("Received: method - {}, target - {}, body - {}.\n", 
+        boost::beast::http::to_string(request->method()), request->target(), request->body());
 
     auto response = std::make_shared<beast::http::response<beast::http::string_body>>();
     response->version(request->version());
@@ -56,7 +59,7 @@ application::application()
     , auth_service(db, "users") {}
 
 int application::execute() try {
-    std::cout << "SSL server listening on port 8443..." << std::endl;
+    spdlog::info("SSL server listening on port 8443...");
     io_context.run();
     
     return 0;
