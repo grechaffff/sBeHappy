@@ -52,11 +52,11 @@ std::shared_ptr<beast::http::response<beast::http::string_body>> application::in
     return response;
 }
 
-application::application()
+application::application(const std::string& postgres_setting, std::string user_table, const tcp_server_config& server_config)
     : io_context()
-    , server(io_context, 8443, std::bind(&application::invoker, this, std::placeholders::_1))
-    , db("sBeHappy", "postgres", "host=postgres user=postgres")
-    , auth_service(db, "users") {}
+    , server(server_config, io_context, std::bind(&application::invoker, this, std::placeholders::_1))
+    , db(postgres_setting)
+    , auth_service(db, std::move(user_table)) {}
 
 int application::execute() try {
     spdlog::info("SSL server listening on port 8443...");
@@ -65,6 +65,6 @@ int application::execute() try {
     return 0;
 }
 catch (const std::exception& e) {
-    std::cerr << e.what();
+    spdlog::critical("{}", e.what());
     return 1;
 }

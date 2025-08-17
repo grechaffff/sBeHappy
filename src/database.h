@@ -9,6 +9,7 @@ class pqxx_wrapper {
 private:
     pqxx::connection connection;
 
+    // not used
     static std::string db_setting(std::string db_name, std::optional<std::string> password, std::optional<std::string> other_setting) {
         std::string setting = "dbname = " + db_name + " ";
 
@@ -22,9 +23,7 @@ private:
     }
 
 public:
-    pqxx_wrapper(std::string db_name, std::optional<std::string> password = std::nullopt, 
-        std::optional<std::string> other_setting = std::nullopt)
-        : connection(db_setting(db_name, password, other_setting)) {}
+    pqxx_wrapper(const std::string& setting) : connection(setting) {}
 
     pqxx_wrapper(const pqxx_wrapper&) = delete;
     pqxx_wrapper& operator=(const pqxx_wrapper&) = delete;

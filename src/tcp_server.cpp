@@ -2,9 +2,9 @@
 
 #include <spdlog/spdlog.h>
 
-tcp_server::tcp_server(asio::io_context& io_context, unsigned short port, std::function<invoker_t> invoker)
+tcp_server::tcp_server(const tcp_server_config& config, asio::io_context& io_context, std::function<invoker_t> invoker)
     : context_(ssl::context::tlsv13)
-    , acceptor_(io_context, tcp::endpoint(tcp::v4(), port))
+    , acceptor_(io_context, tcp::endpoint(tcp::v4(), config.port))
     , invoker(std::move(invoker)) {
         
     // Configuring the SSL context
@@ -14,8 +14,8 @@ tcp_server::tcp_server(asio::io_context& io_context, unsigned short port, std::f
         ssl::context::single_dh_use);
         
     // Installing the certificate and private key
-    context_.use_certificate_chain_file("server.crt");
-    context_.use_private_key_file("server.key", ssl::context::pem);
+    context_.use_certificate_chain_file(config.certificate_chain_file);
+    context_.use_private_key_file(config.private_key_file, ssl::context::pem);
         
     // Start accepting connections
     do_accept();
@@ -44,7 +44,8 @@ void tcp_server::do_accept() {
                         else {
                             spdlog::error("Handshake failed: {}.", ec.message());
                         }
-                    });
+                    }
+                );
             }
                 
             // Accept the following connection
@@ -77,7 +78,8 @@ void tcp_server::handle_connection(std::shared_ptr<ssl::stream<tcp::socket>> ssl
                         if (ec) {
                             spdlog::error("Write failed: {}.", ec.message());
                         }
-                    });
+                    }
+                );
             }
         });
     }

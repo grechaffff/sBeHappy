@@ -6,10 +6,11 @@
 #include "./database.h"
 #include <bcrypt/BCrypt.hpp>
 #include <nlohmann/json.hpp>
-using json = nlohmann::json;
 
 class authorization_service {
 private:
+    using json = nlohmann::json;
+    
     database& db;
     std::string user_table_name;
 

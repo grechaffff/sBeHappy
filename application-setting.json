@@ -1,0 +1,11 @@
+{
+    "postgres" : {
+        "setting" : "dbname=sBeHappy password=postgres host=postgres user=postgres",
+        "user_table" : "users"
+    },
+    "server" : {
+        "port" : 8443,
+        "certificate_chain_file" : "server.crt",
+        "private_key_file" : "server.key"
+    }
+}

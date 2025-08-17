@@ -1,16 +1,23 @@
 #pragma once
 
-#include <boost/asio.hpp>
-#include <boost/asio/ssl.hpp>
-#include <boost/beast.hpp>
 #include <iostream>
 #include <string>
 #include <memory>
+
+#include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
+#include <boost/beast.hpp>
 
 namespace asio = boost::asio;
 namespace ssl = asio::ssl;
 namespace beast = boost::beast;
 using tcp = asio::ip::tcp;
+
+struct tcp_server_config {
+    unsigned short port;
+    std::string certificate_chain_file;
+    std::string private_key_file;
+};
 
 class tcp_server {
 public:
@@ -19,7 +26,7 @@ public:
     );
 
     // invoker will be called when a request is received from the client
-    tcp_server(asio::io_context& io_context, unsigned short port, std::function<invoker_t> invoker);
+    tcp_server(const tcp_server_config& config, asio::io_context& io_context, std::function<invoker_t> invoker);
 
 private:
     ssl::context context_;
