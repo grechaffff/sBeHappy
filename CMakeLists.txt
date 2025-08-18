@@ -8,6 +8,7 @@ find_package(Boost 1.66.0 REQUIRED COMPONENTS system)
 find_package(OpenSSL REQUIRED)
 find_package(PostgreSQL REQUIRED)
 find_package(spdlog REQUIRED)
+find_package(fmt REQUIRED)
 
 add_subdirectory(src)
 

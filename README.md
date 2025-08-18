@@ -30,6 +30,7 @@ project/
 - libbcrypt
 - nlohmann/json
 - spdlog
+- fmt
 
 #### Postgres service
 - PostgreSQL 16.x  

@@ -9,6 +9,7 @@ RUN apk add git
 RUN apk add boost-dev
 RUN apk add openssl
 RUN apk add spdlog spdlog-dev
+RUN apk add fmt fmt-dev
 
 RUN apk add postgresql postgresql-contrib postgresql-dev
 

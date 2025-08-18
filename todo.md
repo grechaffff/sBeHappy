@@ -3,9 +3,6 @@
 1. **No tests**:
     - There are no unit or integration tests, which makes it more difficult to verify the correctness of the code.
 
-2. **There is no processing of duplicate users**:
-    - In the "authorization_service" there is no verification of the uniqueness of username and email before insertion into the database, which can lead to errors.  
-
 3. **Lack of an authentication mechanism**:
     - There is registration, but there is no login (login) and token issuance (JWT, sessions, etc.).  
 
@@ -34,3 +31,6 @@
     - The server is not designed for horizontal scaling.
 ---
 ### Done:
+    
+2. **There is no processing of duplicate users**:
+    - In the "authorization_service" there is no verification of the uniqueness of username and email before insertion into the database, which can lead to errors.  

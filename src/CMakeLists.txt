@@ -11,6 +11,7 @@ target_link_libraries(${PROJECT_LIBRARY_NAME}
     OpenSSL::SSL
     bcrypt
     spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32>
+    fmt::fmt
 )
 
 add_executable(${CMAKE_PROJECT_NAME} main.cpp)
