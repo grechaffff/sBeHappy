@@ -62,10 +62,15 @@ application::application(const std::string& postgres_setting, std::string user_t
 int application::execute() try {
     spdlog::info("SSL server listening on port 8443...");
     io_context.run();
+    spdlog::info("SSL server stoped.");
     
     return 0;
 }
 catch (const std::exception& e) {
     spdlog::critical("{}", e.what());
     return 1;
+}
+
+void application::stop() {
+    io_context.stop();
 }

@@ -26,4 +26,5 @@ public:
     application& operator=(const application&) = delete;
     
     int execute();
+    void stop();
 };

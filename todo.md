@@ -12,9 +12,6 @@
 6. **No CORS support**:
     - If the API is going to be used in web applications, you need to add CORS headers.  
 
-7. **The absence of a graceful shutdown**:
-    - There is no mechanism for correctly shutting down the server (for example, when receiving a SIGINT).  
-
 9. **There is no load on the SSL context**:
     - Certificates and keys are downloaded from files, but there is no verification of their validity or support for the update mechanism.  
 
@@ -31,6 +28,9 @@
 
 4. **There is no limit on the request size**:  
     - The buffer for reading an HTTP request is unlimited, which can lead to a memory exhaustion attack.  
+
+7. **The absence of a graceful shutdown**:
+    - There is no mechanism for correctly shutting down the server (for example, when receiving a SIGINT).  
 
 8. **Insufficient logging**:  
     - Only errors and basic events are logged, but there is no detailed logging (for example, successful registrations).  

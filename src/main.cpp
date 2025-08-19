@@ -12,9 +12,15 @@ std::string read_file(std::ifstream& file) {
     return data;
 }
 
-const char* application_setting_filename = "application-setting.json";
+std::unique_ptr<application> app = nullptr;
 
-int main() {
+void signal_handler(int signal) {
+    spdlog::critical("Received {} signal!", signal);
+    spdlog::debug("Try to stop application!");
+    app->stop();
+};
+
+int create_application(const char* application_setting_filename) {
     using json = nlohmann::json;
     // open & check json file
     std::ifstream application_setting_file(application_setting_filename, std::ios_base::in);
@@ -52,8 +58,8 @@ int main() {
         return 1;
     }
 
-    // create & run application
-    application app(
+    // create & config application
+    app = std::make_unique<application>(
         postgres_setting["setting"], 
         postgres_setting["user_table"],
         tcp_server_config {
@@ -62,5 +68,18 @@ int main() {
             server_setting["private_key_file"]
         }
     );
-    return app.execute();
+
+    return 0;
+}
+
+int main() {
+    if (int result = create_application("application-setting.json"); result != 0)
+        return result;
+
+    // add signal handler
+    signal(SIGINT, signal_handler);
+    signal(SIGTERM, signal_handler);
+
+    // run application
+    return app->execute();
 }
