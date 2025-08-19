@@ -52,7 +52,7 @@ public:
         std::string username = data["username"];
         if (!is_valid_username(username))
             throw std::runtime_error("Incorrect username!");
-        if (!transaction.exec(fmt::format("SELECT * FROM {} WHERE username = '{}';", user_table_name, username)).empty()) {
+        if (!transaction.exec(fmt::format("SELECT * FROM {} WHERE username = $1;", user_table_name), pqxx::params(username)).empty()) {
             transaction.abort();
             throw std::runtime_error("Username is already in use!");
         }
@@ -60,7 +60,7 @@ public:
         std::string email = data["email"];
         if (!is_valid_email(email))
             throw std::runtime_error("Incorrect email!");
-        if (!transaction.exec(fmt::format("SELECT * FROM {} WHERE email = '{}';", user_table_name, email)).empty()) {
+        if (!transaction.exec(fmt::format("SELECT * FROM {} WHERE email = $1;", user_table_name), pqxx::params(email)).empty()) {
             transaction.abort();
             throw std::runtime_error("Email is already in use!");
         }
@@ -68,8 +68,8 @@ public:
         std::string password_hash = BCrypt::generateHash(data["password"]);
 
         try {
-            transaction.exec(fmt::format("INSERT INTO {}(username, email, password_hash) VALUES(\'{}\', \'{}\', \'{}\');", 
-                user_table_name, username, email, password_hash));
+            transaction.exec(fmt::format("INSERT INTO {}(username, email, password_hash) VALUES($1, $2, $3);", 
+                user_table_name), pqxx::params(username, email, password_hash));
             transaction.commit();
         }
         catch (const std::exception& e) {
