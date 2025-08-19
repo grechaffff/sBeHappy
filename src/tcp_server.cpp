@@ -2,8 +2,9 @@
 
 #include <spdlog/spdlog.h>
 
-tcp_server::tcp_server(const tcp_server_config& config, asio::io_context& io_context, std::function<invoker_t> invoker)
-    : context_(ssl::context::tlsv13)
+tcp_server::tcp_server(tcp_server_config config, asio::io_context& io_context, std::function<invoker_t> invoker)
+    : config(std::move(config))
+    , context_(ssl::context::tlsv13)
     , acceptor_(io_context, tcp::endpoint(tcp::v4(), config.port))
     , invoker(std::move(invoker)) {
         
@@ -14,8 +15,8 @@ tcp_server::tcp_server(const tcp_server_config& config, asio::io_context& io_con
         ssl::context::single_dh_use);
         
     // Installing the certificate and private key
-    context_.use_certificate_chain_file(config.certificate_chain_file);
-    context_.use_private_key_file(config.private_key_file, ssl::context::pem);
+    context_.use_certificate_chain_file(this->config.certificate_chain_file);
+    context_.use_private_key_file(this->config.private_key_file, ssl::context::pem);
         
     // Start accepting connections
     do_accept();
@@ -65,6 +66,12 @@ void tcp_server::handle_connection(std::shared_ptr<ssl::stream<tcp::socket>> ssl
         *request,
         [this, ssl_socket, buffer, request](boost::system::error_code ec, size_t) {
             if (!ec) {
+                if (request->body().size() > config.max_request_body_size) {
+                    spdlog::error("Request body body size (which is {}) > config.max_request_body_size({}).", 
+                        request->body().size(), config.max_request_body_size);
+                    return;
+                }
+
                 auto response = invoker(request);
                 if (!response)
                     return;

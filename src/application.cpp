@@ -53,9 +53,9 @@ std::shared_ptr<beast::http::response<beast::http::string_body>> application::in
     return response;
 }
 
-application::application(const std::string& postgres_setting, std::string user_table, const tcp_server_config& server_config)
+application::application(const std::string& postgres_setting, std::string user_table, tcp_server_config server_config)
     : io_context()
-    , server(server_config, io_context, std::bind(&application::invoker, this, std::placeholders::_1))
+    , server(std::move(server_config), io_context, std::bind(&application::invoker, this, std::placeholders::_1))
     , db(postgres_setting)
     , auth_service(db, std::move(user_table)) {}
 

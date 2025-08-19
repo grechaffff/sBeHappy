@@ -17,6 +17,8 @@ struct tcp_server_config {
     unsigned short port;
     std::string certificate_chain_file;
     std::string private_key_file;
+
+    unsigned int max_request_body_size = 256;
 };
 
 class tcp_server {
@@ -26,9 +28,10 @@ public:
     );
 
     // invoker will be called when a request is received from the client
-    tcp_server(const tcp_server_config& config, asio::io_context& io_context, std::function<invoker_t> invoker);
+    tcp_server(tcp_server_config config, asio::io_context& io_context, std::function<invoker_t> invoker);
 
 private:
+    tcp_server_config config;
     ssl::context context_;
     tcp::acceptor acceptor_;
     std::function<invoker_t> invoker;

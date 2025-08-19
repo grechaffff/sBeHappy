@@ -20,7 +20,7 @@ private:
     );
 
 public:
-    application(const std::string& postgres_setting, std::string user_table, const tcp_server_config& server_config);
+    application(const std::string& postgres_setting, std::string user_table, tcp_server_config server_config);
     
     application(const application&) = delete;
     application& operator=(const application&) = delete;
