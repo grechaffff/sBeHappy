@@ -18,9 +18,6 @@
 7. **The absence of a graceful shutdown**:
     - There is no mechanism for correctly shutting down the server (for example, when receiving a SIGINT).  
 
-8. **Insufficient logging**:  
-    - Only errors and basic events are logged, but there is no detailed logging (for example, successful registrations).  
-
 9. **There is no load on the SSL context**:
     - Certificates and keys are downloaded from files, but there is no verification of their validity or support for the update mechanism.  
 
@@ -34,3 +31,6 @@
     
 2. **There is no processing of duplicate users**:
     - In the "authorization_service" there is no verification of the uniqueness of username and email before insertion into the database, which can lead to errors.  
+
+8. **Insufficient logging**:  
+    - Only errors and basic events are logged, but there is no detailed logging (for example, successful registrations).  

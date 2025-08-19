@@ -7,7 +7,7 @@ std::shared_ptr<beast::http::response<beast::http::string_body>> application::in
     std::shared_ptr<beast::http::request<beast::http::string_body>> request
 ) {
     spdlog::info("Received: method - {}, target - {}, body - {}.\n", 
-        boost::beast::http::to_string(request->method()), request->target(), request->body());
+        request->method_string(), request->target(), request->body());
 
     auto response = std::make_shared<beast::http::response<beast::http::string_body>>();
     response->version(request->version());
@@ -19,6 +19,7 @@ std::shared_ptr<beast::http::response<beast::http::string_body>> application::in
         response->body() = body;
         response->result(result);
         response->prepare_payload();
+        spdlog::info("Sended: result - {}, body - {}.\n", response->result_int(), response->body());
         return response;
     };
 
