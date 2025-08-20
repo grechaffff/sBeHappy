@@ -15,8 +15,9 @@ private:
 
     authorization_service auth_service;
 
-    std::shared_ptr<beast::http::response<beast::http::string_body>> invoker(
-        std::shared_ptr<beast::http::request<beast::http::string_body>> request
+    void invoker(
+        std::shared_ptr<beast::http::request<beast::http::string_body>> request,
+        std::shared_ptr<beast::http::response<beast::http::string_body>> response
     );
 
 public:

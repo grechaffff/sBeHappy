@@ -1,5 +1,7 @@
 #include "./tcp_server.h"
 
+#include "./response_manager.h"
+
 #include <spdlog/spdlog.h>
 
 tcp_server::tcp_server(tcp_server_config config, asio::io_context& io_context, std::function<invoker_t> invoker)
@@ -66,15 +68,21 @@ void tcp_server::handle_connection(std::shared_ptr<ssl::stream<tcp::socket>> ssl
         *request,
         [this, ssl_socket, buffer, request](boost::system::error_code ec, size_t) {
             if (!ec) {
-                if (request->body().size() > config.max_request_body_size) {
-                    spdlog::error("Request body body size (which is {}) > config.max_request_body_size({}).", 
-                        request->body().size(), config.max_request_body_size);
-                    return;
-                }
+                spdlog::info("Received: method - {}, target - {}, body - {}.\n", 
+                    request->method_string(), request->target(), request->body());
 
-                auto response = invoker(request);
-                if (!response)
-                    return;
+                auto response = response_manager::make_response(request->version(), config.server_name);
+                if (request->body().size() > config.max_request_body_size) {
+                    std::string body = fmt::format("Request body size (which is {}) > config.max_request_body_size(which is {}).", 
+                        request->body().size(), config.max_request_body_size);
+                    spdlog::error(body);
+                    response_manager::edit_response(response, "text/plain", body, beast::http::status::bad_request);
+                }
+                else {
+                    invoker(request, response);
+                }
+                
+                spdlog::info("Sended: result - {}, body - {}.\n", response->result_int(), response->body());
 
                 // Sending a response
                 beast::http::async_write(

@@ -4,6 +4,7 @@
 #include <regex>
 
 #include "./database.h"
+#include "./json_manager.h"
 
 #include <bcrypt/BCrypt.hpp>
 #include <nlohmann/json.hpp>
@@ -43,7 +44,7 @@ public:
         }
 
         auto data = json::parse(json_data);
-        if (!(data.contains("username") && data.contains("email") && data.contains("password"))) {
+        if (!json_manager::contains("username", "email", "password")) {
             throw std::runtime_error("Incorrect json!");
         }
 

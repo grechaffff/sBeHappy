@@ -6,6 +6,7 @@
     "server" : {
         "port" : 8443,
         "certificate_chain_file" : "server.crt",
-        "private_key_file" : "server.key"
+        "private_key_file" : "server.key",
+        "server_name" : "Boost.Asio SSL Server"
     }
 }

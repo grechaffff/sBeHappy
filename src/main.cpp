@@ -38,22 +38,22 @@ int create_application(const char* application_setting_filename) {
     }
 
     auto application_setting = json::parse(application_setting_data);
-    if (!(application_setting.contains("postgres") && application_setting.contains("server"))) {
+    if (!json_manager::contains(application_setting, "postgres", "server")) {
         spdlog::critical("Incorrect JSON file: {}!", application_setting_filename);
         return 1;
     }
 
     // check json[server]
     auto server_setting = application_setting["server"];
-    if (!(server_setting.contains("port") && server_setting.at("port").is_number() 
-        && server_setting.contains("certificate_chain_file") && server_setting.contains("private_key_file"))) {
+    if (!(json_manager::contains(server_setting, "port", "certificate_chain_file", "private_key_file") 
+            && server_setting.at("port").is_number())) {
         spdlog::critical("Incorrect JSON file: {}!", application_setting_filename);
         return 1;
     }
 
     // check json[postgres]
     auto postgres_setting = application_setting["postgres"];
-    if (!(postgres_setting.contains("setting") && postgres_setting.contains("user_table"))) {
+    if (!json_manager::contains(postgres_setting, "setting", "user_table")) {
         spdlog::critical("Incorrect JSON file: {}!", application_setting_filename);
         return 1;
     }
@@ -65,7 +65,8 @@ int create_application(const char* application_setting_filename) {
         tcp_server_config {
             server_setting["port"],
             server_setting["certificate_chain_file"],
-            server_setting["private_key_file"]
+            server_setting["private_key_file"],
+            server_setting["server_name"]
         }
     );
 

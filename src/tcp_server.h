@@ -17,17 +17,19 @@ struct tcp_server_config {
     unsigned short port;
     std::string certificate_chain_file;
     std::string private_key_file;
+    std::string server_name;
 
     unsigned int max_request_body_size = 256;
 };
 
 class tcp_server {
 public:
-    using invoker_t = std::shared_ptr<beast::http::response<beast::http::string_body>>(
-        std::shared_ptr<beast::http::request<beast::http::string_body>>
+    using invoker_t = void(
+        std::shared_ptr<beast::http::request<beast::http::string_body>>,
+        std::shared_ptr<beast::http::response<beast::http::string_body>>
     );
 
-    // invoker will be called when a request is received from the client
+    // invoker will be called when a correct request is received from the client
     tcp_server(tcp_server_config config, asio::io_context& io_context, std::function<invoker_t> invoker);
 
 private:
