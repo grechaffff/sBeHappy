@@ -9,13 +9,17 @@ void application::invoker(
     std::shared_ptr<beast::http::request<beast::http::string_body>> request,
     std::shared_ptr<beast::http::response<beast::http::string_body>> response
 ) {
-    auto edit_response = [&response](const std::string& body, beast::http::status result = beast::http::status::ok) {
-        response_manager::edit_response(response, "plain/text", body, result);
+    auto edit_response = [&response](const std::string& message, const std::string& log, beast::http::status result = beast::http::status::ok) {
+        nlohmann::json body = {
+            {"message", message},
+            {"log", log}
+        };
+        response_manager::edit_response(response, "application/json", body.dump(), result);
     };
 
     if (request->target() == "/api/register") {
         if (!(request->method_string() == "POST" && (*request)[beast::http::field::content_type] == "application/json")) {
-            edit_response("Incorrect request! use /api to get help", beast::http::status::bad_request);
+            edit_response("Incorrect request!", "use /api to get help", beast::http::status::bad_request);
             return;
         }
         
@@ -23,23 +27,24 @@ void application::invoker(
             auth_service.register_(request->body());
         }
         catch (const std::exception& e) {
-            edit_response(std::string(e.what()) +  " use /api to get help");
+            edit_response(e.what(),  "use /api to get help");
             return;
         }
 
-        edit_response("Successful registration!");
+        edit_response("Successful registration!", "");
     }
     else if (request->target() == "/api") {
         edit_response(
+            "",
             "use /api/register to register: method - POST, conted_type - application/json, body - \n"
             "{\n\t\"username\":<username>,\n\t\"email\":<email>,\n\t\"password\":<password>\n}\n"
         );
     }
     else if (request->target() == "/ping") {
-        edit_response("pong");
+        edit_response("", "pong");
     }
     else {
-        edit_response("Incorrect request!", beast::http::status::bad_request);
+        edit_response("", "Incorrect request!", beast::http::status::bad_request);
     }
 }
 
