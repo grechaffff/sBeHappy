@@ -1,5 +1,14 @@
 #pragma once
 
+#include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
+#include <boost/beast.hpp>
+
+namespace asio = boost::asio;
+namespace ssl = asio::ssl;
+namespace beast = boost::beast;
+using tcp = asio::ip::tcp;
+
 struct response_manager {
     using response_t = beast::http::response<beast::http::string_body>;
     using response_pointer_t = std::shared_ptr<response_t>;

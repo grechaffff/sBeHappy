@@ -4,14 +4,7 @@
 #include <string>
 #include <memory>
 
-#include <boost/asio.hpp>
-#include <boost/asio/ssl.hpp>
-#include <boost/beast.hpp>
-
-namespace asio = boost::asio;
-namespace ssl = asio::ssl;
-namespace beast = boost::beast;
-using tcp = asio::ip::tcp;
+#include "./response_manager.h"
 
 struct tcp_server_config {
     unsigned short port;

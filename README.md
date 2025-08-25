@@ -8,7 +8,9 @@ project/
 ├── CMakeLists.txt           # Top-level build configuration (application + tests)
 ├── Dockerfile               # Dockerfile for the application service
 ├── src/                     # Application source code
-│   ├── main.cpp             # Entry point
+│   ├── app/                 # Application source(there're main.cpp - entry point)
+│   ├── include/             # Headers for app
+│   ├── modules/             # Source for headers
 │   ├── CMakeLists.txt       # Application build config
 │   └── ...
 ├── tests/                   # Test suite

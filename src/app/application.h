@@ -2,9 +2,9 @@
 
 #include <iostream>
 
-#include "./tcp_server.h"
-#include "./database.h"
-#include "./authorization_service.h"
+#include <core/tcp_server>
+#include <core/database>
+#include <core/authorization_service>
 
 class application {
 private:

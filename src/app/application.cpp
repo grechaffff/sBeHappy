@@ -2,8 +2,6 @@
 
 #include <spdlog/spdlog.h>
 
-#include "./response_manager.h"
-
 // invoker_t
 void application::invoker(
     std::shared_ptr<beast::http::request<beast::http::string_body>> request,

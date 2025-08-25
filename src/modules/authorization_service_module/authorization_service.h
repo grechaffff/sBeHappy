@@ -3,12 +3,12 @@
 #include <string>
 #include <regex>
 
-#include "./database.h"
-#include "./json_manager.h"
-
 #include <bcrypt/BCrypt.hpp>
 #include <nlohmann/json.hpp>
 #include <fmt/format.h>
+
+#include <core/database>
+#include <core/json_manager>
 
 class authorization_service {
 private:

@@ -1,9 +1,9 @@
 #include <fstream>
 
-#include "./application.h"
-
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
+
+#include "./application.h"
 
 std::string read_file(std::ifstream& file) {
     std::string data, line;
