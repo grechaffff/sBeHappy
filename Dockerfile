@@ -14,7 +14,6 @@ RUN apk add fmt fmt-dev
 RUN apk add postgresql postgresql-contrib postgresql-dev
 
 WORKDIR /app
-COPY . /app
 
 # pqxx
 RUN apk add libpq-dev
@@ -37,6 +36,8 @@ WORKDIR /app
 RUN git clone --depth=1 https://github.com/nlohmann/json.git /app/json \
     && mkdir -p /usr/local/include \
     && cp -r /app/json/single_include/nlohmann /usr/local/include
+
+COPY . /app
 
 # build
 RUN cmake . -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ && make
