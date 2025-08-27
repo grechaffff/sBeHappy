@@ -44,8 +44,8 @@ public:
         }
 
         auto data = json::parse(json_data);
-        if (!json_manager::contains("username", "email", "password")) {
-            throw std::runtime_error("Incorrect json!");
+        if (!json_manager::contains(data, "username", "email", "password")) {
+            throw std::runtime_error("Invalid json contains!");
         }
 
         auto transaction = db.get_transaction();
