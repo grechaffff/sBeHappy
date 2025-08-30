@@ -33,6 +33,7 @@ project/
 - nlohmann/json
 - spdlog
 - fmt
+- jwt-cpp
 
 #### Postgres service
 - PostgreSQL 16.x  

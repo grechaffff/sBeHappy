@@ -37,9 +37,15 @@ RUN git clone --depth=1 https://github.com/nlohmann/json.git /app/json \
     && mkdir -p /usr/local/include \
     && cp -r /app/json/single_include/nlohmann /usr/local/include
 
+# jwt-cpp 
+RUN git clone https://github.com/Thalhammer/jwt-cpp && \
+    cp -r /app/jwt-cpp/include/* /usr/local/include
+
 COPY . /app
 
 # build
 RUN cmake . -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ && make
+
+ENV JWT_SECRET=P57M78vBG9DSCsvhMxQQoE+MIpYeXLxIRRhOD/yDI8UY291A8hXE47IrPLoVqGNmiJyQ6IpGogUe/q+AZ2MBJA==
 
 CMD ["./src/sBeHappy"]

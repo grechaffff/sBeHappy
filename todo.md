@@ -3,9 +3,6 @@
 1. **No tests**:
     - There are no unit or integration tests, which makes it more difficult to verify the correctness of the code.
 
-3. **Lack of an authentication mechanism**:
-    - There is registration, but there is no login (login) and token issuance (JWT, sessions, etc.).  
-
 5. **No password length validation**:
     - The password is not checked for minimum length or complexity.  
 
@@ -24,7 +21,10 @@
 ### Done:
     
 2. **There is no processing of duplicate users**:
-    - In the "authorization_service" there is no verification of the uniqueness of username and email before insertion into the database, which can lead to errors.  
+    - In the "authorization_service" there is no verification of the uniqueness of username and email before insertion into the database, which can lead to errors. 
+
+3. **Lack of an authentication mechanism**:
+    - There is registration, but there is no login (login) and token issuance (JWT, sessions, etc.).   
 
 4. **There is no limit on the request size**:  
     - The buffer for reading an HTTP request is unlimited, which can lead to a memory exhaustion attack.  

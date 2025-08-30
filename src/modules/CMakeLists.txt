@@ -1,5 +1,6 @@
 set(PROJECT_SOURCES
     https_server_module/https_server.cpp
+    authorization_service_module/authorization_service.cpp
 )
 
 set(PROJECT_LIBRARY_NAME ${CMAKE_PROJECT_NAME}_library)
@@ -15,4 +16,5 @@ target_link_libraries(${PROJECT_LIBRARY_NAME}
     bcrypt
     spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32>
     fmt::fmt
+#     jwt-cpp::jwt-cpp
 )
