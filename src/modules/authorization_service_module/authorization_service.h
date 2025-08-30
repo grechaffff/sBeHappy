@@ -16,9 +16,10 @@ private:
     
     database& db;
     std::string user_table_name;
+    std::string user_logs_table_name;
 
 public:
-    authorization_service(database& db, std::string user_table_name);
+    authorization_service(database& db, std::string user_table_name, std::string user_logs_table_name);
 
     std::string register_(std::string json_data);
     

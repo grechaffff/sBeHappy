@@ -23,9 +23,6 @@
 
 1. **Roles**
     - Add the role field to the user table.
-
-1. **Logging user actions**
-    - A table with the history of logins, password changes, etc.
 ---
 ### Done:
     
@@ -43,3 +40,6 @@
 
 1. **Insufficient logging**:  
     - Only errors and basic events are logged, but there is no detailed logging (for example, successful registrations).  
+
+1. **Logging user actions**
+    - A table with the history of logins, password changes, etc.

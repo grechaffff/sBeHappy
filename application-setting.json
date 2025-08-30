@@ -1,7 +1,8 @@
 {
     "postgres" : {
         "setting" : "dbname=sBeHappy password=postgres host=postgres user=postgres",
-        "user_table" : "users"
+        "user_table" : "users",
+        "user_logs_table" : "user_logs"
     },
     "server" : {
         "port" : 8443,

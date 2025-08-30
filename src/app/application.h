@@ -28,7 +28,12 @@ private:
     );
 
 public:
-    application(const std::string& postgres_setting, std::string user_table, config_t<https_server> server_config);
+    application(
+        const std::string& postgres_setting,
+        std::string user_table,
+        std::string user_logs_table,
+        config_t<https_server> server_config
+    );
     
     application(const application&) = delete;
     application& operator=(const application&) = delete;

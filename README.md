@@ -47,6 +47,15 @@ CREATE TABLE users (
     password_hash VARCHAR(100) NOT NULL
 );
 ```
+- and table `user_logs`:
+``` SQL
+CREATE TABLE user_logs (
+     id SERIAL PRIMARY KEY,
+     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+     log_event TEXT NOT NULL
+ );
+```
 ## Build and Run
 Clone the repository, build the Docker containers, and start the services with:
 

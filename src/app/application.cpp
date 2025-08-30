@@ -16,12 +16,16 @@ void application::no_route_invoker(
     response_manager::edit_response(response, "text/plain", body, beast::http::status::bad_request);
 }
 
-application::application(const std::string& postgres_setting, std::string user_table, config_t<https_server> server_config)
-    : io_context()
+application::application(
+    const std::string& postgres_setting,
+    std::string user_table,
+    std::string user_logs_table,
+    config_t<https_server> server_config
+) : io_context()
     , server(std::move(server_config), io_context,
         std::bind(&application::no_route_invoker, this, std::placeholders::_1, std::placeholders::_2))
     , db(postgres_setting)
-    , auth_service(db, std::move(user_table)) {}
+    , auth_service(db, std::move(user_table), std::move(user_logs_table)) {}
 
 int application::execute() try {
     server.set("/api/register", [this](request_pointer_t request, response_pointer_t response){

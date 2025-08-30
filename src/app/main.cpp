@@ -53,7 +53,7 @@ int create_application(const char* application_setting_filename) {
 
     // check json[postgres]
     auto postgres_setting = application_setting["postgres"];
-    if (!json_manager::contains(postgres_setting, "setting", "user_table")) {
+    if (!json_manager::contains(postgres_setting, "setting", "user_table", "user_logs_table")) {
         spdlog::critical("Incorrect JSON file: {}!", application_setting_filename);
         return 1;
     }
@@ -62,6 +62,7 @@ int create_application(const char* application_setting_filename) {
     app = std::make_unique<application>(
         postgres_setting["setting"], 
         postgres_setting["user_table"],
+        postgres_setting["user_logs_table"],
         config_t<https_server> {
             server_setting["port"],
             server_setting["certificate_chain_file"],
