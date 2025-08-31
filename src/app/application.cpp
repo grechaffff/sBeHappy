@@ -1,5 +1,7 @@
 #include "./application.h"
 
+#include <vector>
+
 #include <spdlog/spdlog.h>
 #include <fmt/format.h>
 
@@ -71,6 +73,44 @@ int application::execute() try {
         );
     });
 
+    server.set("/health/postgres", [this](request_pointer_t, response_pointer_t response) {
+        try {
+            auto transaction = db.get_transaction();
+            transaction.exec("SELECT 1;");
+            transaction.commit();
+            
+            response_manager::edit_response(response, "text/plain", "Requests are being executed", beast::http::status::ok);
+        }
+        catch (...) {
+            response_manager::edit_response(response, "text/plain", "Requests aren not being executed", beast::http::status::service_unavailable);
+        }
+    });
+
+    server.set("/health/application", [](request_pointer_t request, response_pointer_t response) {
+        response_manager::edit_response(response, "text/plain", "Requests are being executed", beast::http::status::ok);
+    });
+
+    server.set("/health", [this](request_pointer_t request, response_pointer_t response) {
+        bool is_all_healthy = true;
+
+        nlohmann::json info;
+        std::vector<std::string> services = { "application", "postgres" };
+
+        for (const auto& service : services) {
+            server.get(std::string("/health/") + service)(request, response);
+            if (response->result() == beast::http::status::service_unavailable)
+                is_all_healthy = false;
+            info[service]["info"] = response->body();
+            info[service]["result"] = response->result();
+        }
+
+        nlohmann::json body;
+        body["info"] = info;
+
+        response_manager::edit_response(response, "application/json", body.dump(), 
+            is_all_healthy ? beast::http::status::ok : beast::http::status::service_unavailable);
+    });
+    
     server.set("/ping", [](request_pointer_t request, response_pointer_t response){
         response_manager::edit_response(response, "text/plain", "pong", beast::http::status::ok);
     });

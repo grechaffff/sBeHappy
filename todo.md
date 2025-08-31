@@ -15,9 +15,6 @@
 1. **No load balancing and scaling**:  
     - The server is not designed for horizontal scaling.
 
-1. **Endpoint**
-    - Endpoint /health for checking state BD and services.
-
 1. **Roles**
     - Add the role field to the user table.
 ---
@@ -43,3 +40,6 @@
 
 1. **No password length validation**:
     - The password is not checked for minimum length or complexity.  
+
+1. **Endpoint**
+    - Endpoint /health for checking state BD and services.

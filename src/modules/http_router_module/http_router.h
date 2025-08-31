@@ -24,6 +24,11 @@ public:
         routes.insert({target, std::move(invoker)});
     }
 
+    std::function<invoker_t> get(const std::string target) {
+        auto it = routes.find(target);
+        return (it == routes.end()) ? no_route_invoker : it->second;
+    }
+
 private:
     http_server_t server;
 
