@@ -3,9 +3,6 @@
 1. **No tests**:
     - There are no unit or integration tests, which makes it more difficult to verify the correctness of the code.
 
-1. **No password length validation**:
-    - The password is not checked for minimum length or complexity.  
-
 1. **No CORS support**:
     - If the API is going to be used in web applications, you need to add CORS headers.  
 
@@ -43,3 +40,6 @@
 
 1. **Logging user actions**
     - A table with the history of logins, password changes, etc.
+
+1. **No password length validation**:
+    - The password is not checked for minimum length or complexity.  

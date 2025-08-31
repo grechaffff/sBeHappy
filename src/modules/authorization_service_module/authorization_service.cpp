@@ -1,6 +1,7 @@
 #include "./authorization_service.h"
 
 #include "./jwt_manager.h"
+#include "./password_manager.h"
 
 authorization_service::authorization_service(database& db, std::string user_table_name, std::string user_logs_table_name)
     : db(db), user_table_name(std::move(user_table_name)), user_logs_table_name(std::move(user_logs_table_name)) {}
@@ -29,7 +30,15 @@ std::string authorization_service::register_(std::string json_data) {
         throw std::runtime_error("Email is already in use!");
     }
 
-    std::string password_hash = BCrypt::generateHash(data["password"]);
+    std::string password = data["password"];
+    switch (password_manager::check(password)) {
+        case password_manager::complexity_e::invalid:
+            throw std::runtime_error("Password is invalid!");
+        case password_manager::complexity_e::easy:
+            throw std::runtime_error("Password is too easy!");
+        default: break;
+    }
+    std::string password_hash = BCrypt::generateHash(password);
 
     try {
         transaction.exec(fmt::format("INSERT INTO {}(username, email, password_hash) VALUES($1, $2, $3);", 
