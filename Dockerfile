@@ -46,6 +46,4 @@ COPY . /app
 # build
 RUN cmake . -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ && make
 
-ENV JWT_SECRET=P57M78vBG9DSCsvhMxQQoE+MIpYeXLxIRRhOD/yDI8UY291A8hXE47IrPLoVqGNmiJyQ6IpGogUe/q+AZ2MBJA==
-
 CMD ["./src/sBeHappy"]
