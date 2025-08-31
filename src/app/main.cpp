@@ -60,9 +60,11 @@ int create_application(const char* application_setting_filename) {
 
     // create & config application
     app = std::make_unique<application>(
-        postgres_setting["setting"], 
-        postgres_setting["user_table"],
-        postgres_setting["user_logs_table"],
+        postgres_setting["setting"],
+        config_t<authorization_service> {
+            postgres_setting["user_table"],
+            postgres_setting["user_logs_table"]
+        },
         config_t<https_server> {
             server_setting["port"],
             server_setting["certificate_chain_file"],

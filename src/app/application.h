@@ -30,8 +30,7 @@ private:
 public:
     application(
         const std::string& postgres_setting,
-        std::string user_table,
-        std::string user_logs_table,
+        config_t<authorization_service> auth_service_config,
         config_t<https_server> server_config
     );
     

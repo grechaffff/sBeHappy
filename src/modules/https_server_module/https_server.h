@@ -4,10 +4,9 @@
 #include <string>
 #include <memory>
 
-#include "./response_manager.h"
+#include <core/utils>
 
-template <class T>
-struct config_t;
+#include "./response_manager.h"
 
 class https_server;
 

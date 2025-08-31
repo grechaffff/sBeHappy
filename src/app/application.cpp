@@ -18,14 +18,13 @@ void application::no_route_invoker(
 
 application::application(
     const std::string& postgres_setting,
-    std::string user_table,
-    std::string user_logs_table,
+    config_t<authorization_service> auth_service_config,
     config_t<https_server> server_config
-) : io_context()
+)   : io_context()
     , server(std::move(server_config), io_context,
         std::bind(&application::no_route_invoker, this, std::placeholders::_1, std::placeholders::_2))
     , db(postgres_setting)
-    , auth_service(db, std::move(user_table), std::move(user_logs_table)) {}
+    , auth_service(db, std::move(auth_service_config)) {}
 
 int application::execute() try {
     server.set("/api/register", [this](request_pointer_t request, response_pointer_t response){

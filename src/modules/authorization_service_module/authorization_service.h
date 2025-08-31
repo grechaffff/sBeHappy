@@ -9,17 +9,25 @@
 
 #include <core/database>
 #include <core/json_manager>
+#include <core/utils>
+
+class authorization_service;
+
+template <>
+struct config_t<authorization_service> {
+    std::string user_table_name;
+    std::string user_logs_table_name;
+};
 
 class authorization_service {
 private:
     using json = nlohmann::json;
     
     database& db;
-    std::string user_table_name;
-    std::string user_logs_table_name;
+    config_t<authorization_service> config;
 
 public:
-    authorization_service(database& db, std::string user_table_name, std::string user_logs_table_name);
+    authorization_service(database& db, config_t<authorization_service>);
 
     std::string register_(std::string json_data);
     
