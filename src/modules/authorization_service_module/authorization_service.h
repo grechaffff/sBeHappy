@@ -3,9 +3,7 @@
 #include <string>
 #include <regex>
 
-#include <bcrypt/BCrypt.hpp>
 #include <nlohmann/json.hpp>
-#include <fmt/format.h>
 
 #include <core/database>
 #include <core/json_manager>

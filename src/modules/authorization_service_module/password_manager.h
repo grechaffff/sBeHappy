@@ -2,12 +2,22 @@
 
 #include <string>
 
+#include <bcrypt/BCrypt.hpp>
+
 struct password_manager {
     enum class complexity_e {
         invalid, easy, medium, hard
     };
 
-    static complexity_e check(const std::string& password) {
+    static std::string hash(const std::string& password) {
+        return BCrypt::generateHash(password);
+    }
+
+    static bool verify(const std::string& password, const std::string& password_hash) {
+        return BCrypt::validatePassword(password, password_hash);
+    }
+
+    static complexity_e check_complexity(const std::string& password) {
         int lowercase_letters = 0,
             uppercase_letters = 0,
             digits = 0,

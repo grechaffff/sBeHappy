@@ -1,5 +1,7 @@
 #include "./authorization_service.h"
 
+#include <fmt/format.h>
+
 #include "./jwt_manager.h"
 #include "./password_manager.h"
 
@@ -31,14 +33,14 @@ std::string authorization_service::register_(std::string json_data) {
     }
 
     std::string password = data["password"];
-    switch (password_manager::check(password)) {
+    switch (password_manager::check_complexity(password)) {
         case password_manager::complexity_e::invalid:
             throw std::runtime_error("Password is invalid!");
         case password_manager::complexity_e::easy:
             throw std::runtime_error("Password is too easy!");
         default: break;
     }
-    std::string password_hash = BCrypt::generateHash(password);
+    std::string password_hash = password_manager::hash(password);
 
     try {
         transaction.exec(fmt::format("INSERT INTO {}(username, email, password_hash) VALUES($1, $2, $3);", 
@@ -82,7 +84,7 @@ std::string authorization_service::login(std::string json_data) {
 
     std::string password_hash = transaction.exec(fmt::format("SELECT password_hash FROM {} WHERE username = $1;", config.user_table_name), pqxx::params(username))[0][0].c_str();
 
-    if (!BCrypt::validatePassword(data["password"], password_hash)) {
+    if (!password_manager::verify(data["password"], password_hash)) {
         throw std::runtime_error("Password is incorrect!");
     }
 

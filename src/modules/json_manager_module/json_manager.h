@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include <nlohmann/json.hpp>
 
 struct json_manager {

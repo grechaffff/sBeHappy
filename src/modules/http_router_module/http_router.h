@@ -1,9 +1,7 @@
 #pragma once
 
 #include <core/boost_include>
-
-template <class T>
-struct config_t;
+#include <core/utils>
 
 template <class http_server_t>
 class http_router {
