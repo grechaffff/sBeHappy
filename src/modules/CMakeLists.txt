@@ -1,6 +1,7 @@
 set(PROJECT_SOURCES
     https_server_module/https_server.cpp
     authorization_service_module/authorization_service.cpp
+    authorization_service_module/password_manager.cpp
 )
 
 set(PROJECT_LIBRARY_NAME ${CMAKE_PROJECT_NAME}_library)

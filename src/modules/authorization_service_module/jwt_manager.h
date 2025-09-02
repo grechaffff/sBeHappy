@@ -16,7 +16,7 @@ struct jwt_manager {
         const std::string& username,
         const std::string& server_name,
         const std::string& secret
-    ) {
+    ) noexcept {
         boost::uuids::uuid unique_id = uuid_generator();
         std::string jti = boost::uuids::to_string(unique_id);
 

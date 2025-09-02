@@ -35,16 +35,12 @@ int application::execute() try {
             return;
         }
         
-        std::string jwt_token;
-        try {
-            jwt_token = auth_service.register_(request->body());
+        if (auto jwt_token_ex = auth_service.register_(request->body()); jwt_token_ex.has_value()) {
+            response_manager::edit_response(response, "text/plain", *jwt_token_ex, beast::http::status::ok);
         }
-        catch (const std::exception& e) {
-            response_manager::edit_response(response, "text/plain", e.what(), beast::http::status::bad_request);
-            return;
+        else {
+            response_manager::edit_response(response, "text/plain", jwt_token_ex.error(), beast::http::status::bad_request);
         }
-
-        response_manager::edit_response(response, "text/plain", jwt_token, beast::http::status::ok);
     });
 
     server.set("/api/login", [this](request_pointer_t request, response_pointer_t response){
@@ -53,16 +49,12 @@ int application::execute() try {
             return;
         }
         
-        std::string jwt_token;
-        try {
-            jwt_token = auth_service.login(request->body());
+        if (auto jwt_token_ex = auth_service.login(request->body()); jwt_token_ex.has_value()) {
+            response_manager::edit_response(response, "text/plain", *jwt_token_ex, beast::http::status::ok);
         }
-        catch (const std::exception& e) {
-            response_manager::edit_response(response, "text/plain", e.what(), beast::http::status::bad_request);
-            return;
+        else {
+            response_manager::edit_response(response, "text/plain", jwt_token_ex.error(), beast::http::status::bad_request);
         }
-
-        response_manager::edit_response(response, "text/plain", jwt_token, beast::http::status::ok);
     });
     
     server.set("/api", [](request_pointer_t request, response_pointer_t response){

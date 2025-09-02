@@ -8,36 +8,36 @@
 authorization_service::authorization_service(database& db, config_t<authorization_service> config)
     : db(db), config(std::move(config)) {}
 
-std::string authorization_service::register_(std::string json_data) {
+std::expected<std::string, std::string> authorization_service::register_(std::string json_data) {
     auto [data, is_valid] = json_manager::create(json_data, "username", "email", "password");
     if (!is_valid) {
-        throw std::runtime_error("Invalid json!");
+        return std::unexpected("Invalid json!");
     }
 
     auto transaction = db.get_transaction();
 
     std::string username = data["username"];
     if (!is_valid_username(username))
-        throw std::runtime_error("Incorrect username!");
+        return std::unexpected("Incorrect username!");
     if (!transaction.exec(fmt::format("SELECT * FROM {} WHERE username = $1;", config.user_table_name), pqxx::params(username)).empty()) {
         transaction.abort();
-        throw std::runtime_error("Username is already in use!");
+        return std::unexpected("Username is already in use!");
     }
 
     std::string email = data["email"];
     if (!is_valid_email(email))
-        throw std::runtime_error("Incorrect email!");
+        return std::unexpected("Incorrect email!");
     if (!transaction.exec(fmt::format("SELECT * FROM {} WHERE email = $1;", config.user_table_name), pqxx::params(email)).empty()) {
         transaction.abort();
-        throw std::runtime_error("Email is already in use!");
+        return std::unexpected("Email is already in use!");
     }
 
     std::string password = data["password"];
     switch (password_manager::check_complexity(password)) {
         case password_manager::complexity_e::invalid:
-            throw std::runtime_error("Password is invalid!");
+            return std::unexpected("Password is invalid!");
         case password_manager::complexity_e::easy:
-            throw std::runtime_error("Password is too easy!");
+            return std::unexpected("Password is too easy!");
         default: break;
     }
     std::string password_hash = password_manager::hash(password);
@@ -48,7 +48,7 @@ std::string authorization_service::register_(std::string json_data) {
     }
     catch (const std::exception& e) {
         transaction.abort();
-        throw std::runtime_error("Incorrect data!");
+        return std::unexpected("Incorrect data!");
     }
 
     try {
@@ -59,33 +59,33 @@ std::string authorization_service::register_(std::string json_data) {
     }
     catch (const std::exception& e) {
         transaction.abort();
-        throw std::runtime_error("Unknown error!");
+        return std::unexpected("Unknown error!");
     }
 
     return jwt_manager::create_token(username, "SERVER", std::getenv("JWT_SECRET"));
 }
 
-std::string authorization_service::login(std::string json_data) {
+std::expected<std::string, std::string> authorization_service::login(std::string json_data) {
     auto [data, is_valid] = json_manager::create(json_data, "username", "password");
     if (!is_valid) {
-        throw std::runtime_error("Invalid json!");
+        return std::unexpected("Invalid json!");
     }
 
     auto transaction = db.get_transaction();
 
     std::string username = data["username"];
     if (!is_valid_username(username))
-        throw std::runtime_error("Incorrect username!");
+        return std::unexpected("Incorrect username!");
 
     if (transaction.exec(fmt::format("SELECT * FROM {} WHERE username = $1;", config.user_table_name), pqxx::params(username)).empty()) {
         transaction.abort();
-        throw std::runtime_error("Username is not in use!");
+        return std::unexpected("Username is not in use!");
     }
 
     std::string password_hash = transaction.exec(fmt::format("SELECT password_hash FROM {} WHERE username = $1;", config.user_table_name), pqxx::params(username))[0][0].c_str();
 
     if (!password_manager::verify(data["password"], password_hash)) {
-        throw std::runtime_error("Password is incorrect!");
+        return std::unexpected("Password is incorrect!");
     }
 
     try {
@@ -96,7 +96,7 @@ std::string authorization_service::login(std::string json_data) {
     }
     catch (const std::exception& e) {
         transaction.abort();
-        throw std::runtime_error("Unknown error!");
+        return std::unexpected("Unknown error!");
     }
 
     return jwt_manager::create_token(username, "SERVER", std::getenv("JWT_SECRET"));

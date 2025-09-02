@@ -24,9 +24,9 @@ project/
 - Docker
 
 #### Application service(these components are installed in Dockerfile)
-- C++20 or newer
+- C++23 or newer
 - CMake 3.10+
-- Boost(Asio, Beast)
+- Boost(Asio, Beast, uuid)
 - OpenSSL(need for Boost.Asio)
 - libpqxx ≥ 7.0
 - libbcrypt

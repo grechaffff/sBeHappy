@@ -2,6 +2,7 @@
 
 #include <string>
 #include <regex>
+#include <expected>
 
 #include <nlohmann/json.hpp>
 
@@ -27,9 +28,9 @@ private:
 public:
     authorization_service(database& db, config_t<authorization_service>);
 
-    std::string register_(std::string json_data);
+    std::expected<std::string, std::string> register_(std::string json_data);
     
-    std::string login(std::string json_data);
+    std::expected<std::string, std::string> login(std::string json_data);
 
     static bool is_valid_username(const std::string& name) {
         for (auto c : name) {
