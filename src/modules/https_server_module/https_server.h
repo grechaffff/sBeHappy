@@ -3,10 +3,16 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include <optional>
 
 #include <core/utils>
+#include <core/response_manager>
 
-#include "./response_manager.h"
+struct CORS_config_t {
+    std::string origin;
+    std::string methods;
+    std::string headers;
+};
 
 class https_server;
 
@@ -16,7 +22,7 @@ struct config_t<https_server> {
     std::string certificate_chain_file;
     std::string private_key_file;
     std::string server_name;
-
+    std::optional<CORS_config_t> CORS_config;
     unsigned int max_request_body_size = 256 * 8; // in bytes
 };
 

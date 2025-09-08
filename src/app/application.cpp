@@ -29,6 +29,10 @@ application::application(
     , auth_service(db, std::move(auth_service_config)) {}
 
 int application::execute() try {
+    server.set_directory("/client/", "./client/");
+    
+    server.set_redirection("/", "/client/index.html");
+
     server.set("/api/register", [this](request_pointer_t request, response_pointer_t response){
         if (!(request->method_string() == "POST" && (*request)[beast::http::field::content_type] == "application/json")) {
             response_manager::edit_response(response, "text/plain", "Incorrect request!", beast::http::status::bad_request);
@@ -89,7 +93,7 @@ int application::execute() try {
         std::vector<std::string> services = { "application", "postgres" };
 
         for (const auto& service : services) {
-            server.get(std::string("/health/") + service)(request, response);
+            server.get(std::string("/health/") + service).value()(request, response);
             if (response->result() == beast::http::status::service_unavailable)
                 is_all_healthy = false;
             info[service]["info"] = response->body();
@@ -105,24 +109,6 @@ int application::execute() try {
     
     server.set("/ping", [](request_pointer_t request, response_pointer_t response){
         response_manager::edit_response(response, "text/plain", "pong", beast::http::status::ok);
-    });
-    
-    server.set("/api/jwt/create", [](request_pointer_t request, response_pointer_t response){
-        response_manager::edit_response(
-            response,
-            "text/plain", 
-            jwt_manager::create_token(request->body(), "SERVER", std::getenv("JWT_SECRET")),
-            beast::http::status::ok
-        );
-    });
-    
-    server.set("/api/jwt/verify", [](request_pointer_t request, response_pointer_t response){
-        response_manager::edit_response(
-            response,
-            "text/plain", 
-            jwt_manager::verify_token(request->body(), "SERVER", std::getenv("JWT_SECRET")) ? "true" : "false",
-            beast::http::status::ok
-        );
     });
 
     spdlog::info("SSL server listening on port 8443...");

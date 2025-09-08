@@ -8,6 +8,11 @@
         "port" : 8443,
         "certificate_chain_file" : "server.crt",
         "private_key_file" : "server.key",
-        "server_name" : "Boost.Asio SSL Server"
+        "server_name" : "Boost.Asio SSL Server",
+        "CORS" : {
+            "Origin" : "*",
+            "Methods" : "GET, POST",
+            "Headers" : "Content-Type"
+        }
     }
 }

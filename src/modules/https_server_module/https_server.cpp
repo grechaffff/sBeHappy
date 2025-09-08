@@ -83,6 +83,13 @@ void https_server::handle_connection(std::shared_ptr<ssl::stream<tcp::socket>> s
             else {
                 invoker(request, response);
             }
+            
+            if (config.CORS_config.has_value()) {
+                auto CORS_config = config.CORS_config.value();
+                response->set("Access-Control-Allow-Origin", CORS_config.origin);
+                response->set("Access-Control-Allow-Methods", CORS_config.methods);
+                response->set("Access-Control-Allow-Headers", CORS_config.headers);   
+            }
                 
             spdlog::info("Sended: result - {}, body - {}.\n", response->result_int(), response->body());
 

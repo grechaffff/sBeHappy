@@ -45,8 +45,15 @@ int create_application(const char* application_setting_filename) {
 
     // check json[server]
     auto server_setting = application_setting["server"];
-    if (!(json_manager::contains(server_setting, "port", "certificate_chain_file", "private_key_file") 
+    if (!(json_manager::contains(server_setting, "port", "certificate_chain_file", "private_key_file", "CORS") 
             && server_setting.at("port").is_number())) {
+        spdlog::critical("Incorrect JSON file: {}!", application_setting_filename);
+        return 1;
+    }
+    
+    // check json[server][CORS]
+    auto CORS_setting = server_setting["CORS"];
+    if (!json_manager::contains(CORS_setting, "Origin", "Methods", "Headers")) {
         spdlog::critical("Incorrect JSON file: {}!", application_setting_filename);
         return 1;
     }
@@ -69,7 +76,12 @@ int create_application(const char* application_setting_filename) {
             server_setting["port"],
             server_setting["certificate_chain_file"],
             server_setting["private_key_file"],
-            server_setting["server_name"]
+            server_setting["server_name"],
+            CORS_config_t {
+                CORS_setting["Origin"],
+                CORS_setting["Methods"],
+                CORS_setting["Headers"]
+            }
         }
     );
 
