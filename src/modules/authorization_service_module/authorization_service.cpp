@@ -62,11 +62,11 @@ std::expected<std::string, std::string> authorization_service::register_(std::st
         return std::unexpected("Unknown error!");
     }
 
-    return jwt_manager::create_token(username, "SERVER", std::getenv("JWT_SECRET"));
+    return jwt_manager::create_token(username, config.server_name, std::getenv("JWT_SECRET"));
 }
 
 std::expected<std::string, std::string> authorization_service::login(std::string json_data) {
-    auto [data, is_valid] = json_manager::create(json_data, "username", "password");
+    auto [data, is_valid] = json_manager::create(json_data, "username", "password", "role");
     if (!is_valid) {
         return std::unexpected("Invalid json!");
     }
@@ -99,5 +99,9 @@ std::expected<std::string, std::string> authorization_service::login(std::string
         return std::unexpected("Unknown error!");
     }
 
-    return jwt_manager::create_token(username, "SERVER", std::getenv("JWT_SECRET"));
+    return jwt_manager::create_token(username, config.server_name, std::getenv("JWT_SECRET"));
+}
+
+bool authorization_service::verify_token(const std::string& token) noexcept {
+    return jwt_manager::verify_token(token, config.server_name, std::getenv("JWT_SECRET"));
 }

@@ -21,13 +21,13 @@ struct jwt_manager {
         std::string jti = boost::uuids::to_string(unique_id);
 
         auto token = jwt::create()
-            .set_issuer(server_name) // Кто выдал
+            .set_issuer(server_name)
             .set_type("JWT")
-            .set_id(jti) // Уникальный ID для токена
-            .set_issued_at(std::chrono::system_clock::now()) // Время выдачи
-            .set_expires_at(std::chrono::system_clock::now() + std::chrono::hours{24}) // Действует 24 часа
-            .set_payload_claim("username", jwt::claim(username)) // Добавляем username в payload
-            .sign(jwt::algorithm::hs256{secret}); // Подписываем алгоритмом HS256
+            .set_id(jti)
+            .set_issued_at(std::chrono::system_clock::now())
+            .set_expires_at(std::chrono::system_clock::now() + std::chrono::hours{24})
+            .set_payload_claim("username", jwt::claim(username))
+            .sign(jwt::algorithm::hs256{secret});
         
         return token;
     }
@@ -53,7 +53,7 @@ struct jwt_manager {
         return false;
     }
     catch (const std::exception& e) {
-        spdlog::info("JWT error: !", e.what());
+        spdlog::info("JWT error: {}!", e.what());
         return false;
     }
 };

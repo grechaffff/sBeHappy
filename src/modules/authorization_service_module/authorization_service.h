@@ -16,6 +16,7 @@ template <>
 struct config_t<authorization_service> {
     std::string user_table_name;
     std::string user_logs_table_name;
+    std::string server_name;
 };
 
 class authorization_service {
@@ -31,6 +32,8 @@ public:
     std::expected<std::string, std::string> register_(std::string json_data);
     
     std::expected<std::string, std::string> login(std::string json_data);
+
+    bool verify_token(const std::string& token) noexcept;
 
     static bool is_valid_username(const std::string& name) {
         for (auto c : name) {

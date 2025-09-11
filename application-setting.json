@@ -1,8 +1,6 @@
 {
     "postgres" : {
-        "setting" : "dbname=sBeHappy password=postgres host=postgres user=postgres",
-        "user_table" : "users",
-        "user_logs_table" : "user_logs"
+        "setting" : "dbname=sBeHappy password=postgres host=postgres user=postgres"
     },
     "server" : {
         "port" : 8443,
@@ -14,5 +12,10 @@
             "Methods" : "GET, POST",
             "Headers" : "Content-Type"
         }
+    },
+    "authorization_service" : {
+        "user_table" : "users",
+        "user_logs_table" : "user_logs",
+        "jwt_server_name" : "jwt_manager for sBeHappy"
     }
 }

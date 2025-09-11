@@ -38,7 +38,7 @@ int create_application(const char* application_setting_filename) {
     }
 
     auto application_setting = json::parse(application_setting_data);
-    if (!json_manager::contains(application_setting, "postgres", "server")) {
+    if (!json_manager::contains(application_setting, "postgres", "server", "authorization_service")) {
         spdlog::critical("Incorrect JSON file: {}!", application_setting_filename);
         return 1;
     }
@@ -60,7 +60,14 @@ int create_application(const char* application_setting_filename) {
 
     // check json[postgres]
     auto postgres_setting = application_setting["postgres"];
-    if (!json_manager::contains(postgres_setting, "setting", "user_table", "user_logs_table")) {
+    if (!json_manager::contains(postgres_setting, "setting")) {
+        spdlog::critical("Incorrect JSON file: {}!", application_setting_filename);
+        return 1;
+    }
+
+    // check json[authorization_service]
+    auto authorization_service_setting = application_setting["authorization_service"];
+    if (!json_manager::contains(authorization_service_setting, "user_table", "user_logs_table", "jwt_server_name")) {
         spdlog::critical("Incorrect JSON file: {}!", application_setting_filename);
         return 1;
     }
@@ -69,8 +76,9 @@ int create_application(const char* application_setting_filename) {
     app = std::make_unique<application>(
         postgres_setting["setting"],
         config_t<authorization_service> {
-            postgres_setting["user_table"],
-            postgres_setting["user_logs_table"]
+            authorization_service_setting["user_table"],
+            authorization_service_setting["user_logs_table"],
+            authorization_service_setting["jwt_server_name"]
         },
         config_t<https_server> {
             server_setting["port"],
