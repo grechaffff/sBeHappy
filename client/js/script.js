@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const baseUrl = `https://localhost:8443`;
     let authToken = null;
+    let userData = null;
     
     // Элементы интерфейса
     const pingBtn = document.getElementById('pingBtn');
@@ -11,9 +12,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const registerStatus = document.getElementById('registerStatus');
     const userSection = document.getElementById('userSection');
     const userToken = document.getElementById('userToken');
+    const userRole = document.getElementById('userRole');
+    const userName = document.getElementById('userName');
     const logoutBtn = document.getElementById('logoutBtn');
     const tabs = document.querySelectorAll('.tab');
     const tabContents = document.querySelectorAll('.tab-content');
+    const registerRole = document.getElementById('registerRole');
+    const nameLabel = document.getElementById('nameLabel');
+    const nameFieldGroup = document.getElementById('nameFieldGroup');
+    
+    // Изменение текста метки в зависимости от роли
+    registerRole.addEventListener('change', function() {
+        if (this.value === 'buyer') {
+            nameLabel.textContent = 'Имя и фамилия:';
+            document.getElementById('registerName').placeholder = 'Иван Иванов';
+        } else if (this.value === 'seller') {
+            nameLabel.textContent = 'Название компании:';
+            document.getElementById('registerName').placeholder = 'ООО "Рога и копыта"';
+        }
+    });
     
     // Переключение между вкладками
     tabs.forEach(tab => {
@@ -47,21 +64,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     ...options.headers
                 }
             });
-            const data = await response.text();
-            return { success: response.status, data };
+            
+            // Пытаемся получить JSON, если не получается - текст
+            let data = await response.text();
+            
+            return { status: response.status, data };
         } catch (error) {
-            return { success: 0, data: `Ошибка: ${error.message}` };
+            return { status: 0, data: `Ошибка: ${error.message}` };
         }
     }
     
     // Проверка соединения (ping)
     pingBtn.addEventListener('click', async () => {
-        const { success, data } = await makeRequest(`${baseUrl}/ping`);
+        const { status, data } = await makeRequest(`${baseUrl}/ping`);
         
-        if (success) {
+        if (status === 200) {
             showStatus(pingStatus, `Сервер отвечает: ${data}`, true);
         } else {
-            showStatus(pingStatus, `Ошибка: ${data.message || 'Неизвестная ошибка'}`, false);
+            showStatus(pingStatus, `Ошибка: ${typeof data === 'object' ? data.message : data}`, false);
         }
     });
     
@@ -72,21 +92,26 @@ document.addEventListener('DOMContentLoaded', function() {
         const username = document.getElementById('loginUsername').value;
         const password = document.getElementById('loginPassword').value;
         
-        const { success, data } = await makeRequest(`${baseUrl}/api/login`, {
+        const { status, data } = await makeRequest(`${baseUrl}/api/login`, {
             method: 'POST',
             body: JSON.stringify({ username, password })
         });
         
-        if (success) {
+        if (status === 200) {
             showStatus(loginStatus, 'Успешный вход!', true);
-            authToken = data.token; // Предполагаем, что сервер возвращает токен
+            authToken = data.token;
+            userData = data.user;
+            
+            // Обновляем информацию о пользователе
             userToken.textContent = authToken || 'Токен не получен';
+            userRole.textContent = userData?.role || 'Не указана';
+            userName.textContent = userData?.name || 'Не указано';
             userSection.classList.remove('hidden');
             
             // Очищаем форму
             loginForm.reset();
         } else {
-            showStatus(loginStatus, `Ошибка входа: ${data.message || 'Неизвестная ошибка'}`, false);
+            showStatus(loginStatus, `Ошибка входа: ${typeof data === 'object' ? data.message : data}`, false);
         }
     });
     
@@ -97,13 +122,21 @@ document.addEventListener('DOMContentLoaded', function() {
         const username = document.getElementById('registerUsername').value;
         const email = document.getElementById('registerEmail').value;
         const password = document.getElementById('registerPassword').value;
+        const role = document.getElementById('registerRole').value;
+        const name = document.getElementById('registerName').value;
         
-        const { success, data } = await makeRequest(`${baseUrl}/api/register`, {
+        // Валидация роли
+        if (!role) {
+            showStatus(registerStatus, 'Пожалуйста, выберите роль', false);
+            return;
+        }
+        
+        const { status, data } = await makeRequest(`${baseUrl}/api/register`, {
             method: 'POST',
-            body: JSON.stringify({ username, email, password })
+            body: JSON.stringify({ username, email, password, role, name })
         });
         
-        if (success) {
+        if (status === 200 || status === 201) {
             showStatus(registerStatus, 'Регистрация успешна! Теперь вы можете войти.', true);
             registerForm.reset();
             
@@ -113,15 +146,18 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('[data-tab="login"]').classList.add('active');
             document.getElementById('loginTab').classList.add('active');
         } else {
-            showStatus(registerStatus, `Ошибка регистрации: ${data.message || 'Неизвестная ошибка'}`, false);
+            showStatus(registerStatus, `Ошибка регистрации: ${typeof data === 'object' ? data.message : data}`, false);
         }
     });
     
     // Выход
     logoutBtn.addEventListener('click', () => {
         authToken = null;
+        userData = null;
         userSection.classList.add('hidden');
         userToken.textContent = '';
+        userRole.textContent = '';
+        userName.textContent = '';
     });
     
     // Предупреждение о самоподписанном сертификате

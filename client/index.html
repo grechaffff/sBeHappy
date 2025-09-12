@@ -56,6 +56,18 @@
                         <label for="registerPassword">Пароль:</label>
                         <input type="password" id="registerPassword" required>
                     </div>
+                    <div class="form-group">
+                        <label for="registerRole">Роль:</label>
+                        <select id="registerRole" required>
+                            <option value="">Выберите роль</option>
+                            <option value="buyer">Покупатель</option>
+                            <option value="seller">Продавец</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="nameFieldGroup">
+                        <label id="nameLabel" for="registerName">Имя и фамилия:</label>
+                        <input type="text" id="registerName" required>
+                    </div>
                     <button type="submit">Зарегистрироваться</button>
                 </form>
                 <div id="registerStatus" class="status hidden"></div>
@@ -67,6 +79,8 @@
             <div class="user-info">
                 <p>Вы успешно авторизованы!</p>
                 <p>Токен: <span id="userToken"></span></p>
+                <p>Роль: <span id="userRole"></span></p>
+                <p>Имя: <span id="userName"></span></p>
             </div>
             <button id="logoutBtn">Выйти</button>
         </div>

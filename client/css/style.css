@@ -50,7 +50,8 @@ label {
 
 input[type="text"],
 input[type="email"],
-input[type="password"] {
+input[type="password"],
+select {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid #ddd;
@@ -130,6 +131,10 @@ button:hover {
     padding: 1rem;
     border-radius: 4px;
     margin-top: 1rem;
+}
+
+.user-info p {
+    margin-bottom: 0.5rem;
 }
 
 .server-response {

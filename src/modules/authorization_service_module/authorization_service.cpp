@@ -4,6 +4,7 @@
 
 #include "./jwt_manager.h"
 #include "./password_manager.h"
+#include "./role_manager.h"
 
 authorization_service::authorization_service(database& db, config_t<authorization_service> config)
     : db(db), config(std::move(config)) {}
@@ -42,9 +43,14 @@ std::expected<std::string, std::string> authorization_service::register_(std::st
     }
     std::string password_hash = password_manager::hash(password);
 
+    std::string role = data["role"];
+    if (role_manager::check(role) == role_manager::role_e::invalid) {
+        return std::unexpected("Role is invalid!");
+    }
+
     try {
-        transaction.exec(fmt::format("INSERT INTO {}(username, email, password_hash) VALUES($1, $2, $3);", 
-            config.user_table_name), pqxx::params(username, email, password_hash));
+        transaction.exec(fmt::format("INSERT INTO {}(username, email, password_hash, role) VALUES($1, $2, $3, $4);", 
+            config.user_table_name), pqxx::params(username, email, password_hash, role));
     }
     catch (const std::exception& e) {
         transaction.abort();
@@ -66,7 +72,7 @@ std::expected<std::string, std::string> authorization_service::register_(std::st
 }
 
 std::expected<std::string, std::string> authorization_service::login(std::string json_data) {
-    auto [data, is_valid] = json_manager::create(json_data, "username", "password", "role");
+    auto [data, is_valid] = json_manager::create(json_data, "username", "password");
     if (!is_valid) {
         return std::unexpected("Invalid json!");
     }
