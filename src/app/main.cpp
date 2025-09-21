@@ -72,6 +72,13 @@ int create_application(const char* application_setting_filename) {
         return 1;
     }
 
+    // check json[marketplace]
+    auto marketplace_setting = application_setting["marketplace"];
+    if (!json_manager::contains(marketplace_setting, "categories_table")) {
+        spdlog::critical("Incorrect JSON file: {}!", application_setting_filename);
+        return 1;
+    }
+
     // create & config application
     app = std::make_unique<application>(
         postgres_setting["setting"],
@@ -90,6 +97,9 @@ int create_application(const char* application_setting_filename) {
                 CORS_setting["Methods"],
                 CORS_setting["Headers"]
             }
+        },
+        config_t<marketplace> {
+            marketplace_setting["categories_table"]
         }
     );
 

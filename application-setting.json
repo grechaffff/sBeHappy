@@ -17,5 +17,8 @@
         "user_table" : "users",
         "user_logs_table" : "user_logs",
         "jwt_server_name" : "jwt_manager for sBeHappy"
+    },
+    "marketplace" : {
+        "categories_table" : "categories"
     }
 }

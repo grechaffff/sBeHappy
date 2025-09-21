@@ -6,6 +6,7 @@
 #include <core/https_server>
 #include <core/database>
 #include <core/authorization_service>
+#include <core/marketplace>
 
 class application {
 private:
@@ -22,6 +23,8 @@ private:
 
     authorization_service auth_service;
 
+    marketplace market;
+
     void no_route_invoker(
         request_pointer_t request,
         response_pointer_t response
@@ -31,7 +34,8 @@ public:
     application(
         const std::string& postgres_setting,
         config_t<authorization_service> auth_service_config,
-        config_t<https_server> server_config
+        config_t<https_server> server_config,
+        config_t<marketplace> marketplace_config
     );
     
     application(const application&) = delete;

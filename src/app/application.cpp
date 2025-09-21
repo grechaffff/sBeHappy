@@ -21,17 +21,21 @@ void application::no_route_invoker(
 application::application(
     const std::string& postgres_setting,
     config_t<authorization_service> auth_service_config,
-    config_t<https_server> server_config
+    config_t<https_server> server_config,
+    config_t<marketplace> marketplace_config
 )   : io_context()
     , server(std::move(server_config), io_context,
         std::bind(&application::no_route_invoker, this, std::placeholders::_1, std::placeholders::_2))
     , db(postgres_setting)
-    , auth_service(db, std::move(auth_service_config)) {}
+    , auth_service(db, std::move(auth_service_config))
+    , market(db, std::move(marketplace_config)) {}
 
 int application::execute() try {
     server.set_directory("/client/", "./client/");
     
     server.set_redirection("/", "/client/index.html");
+
+    market.set_routes(server);
 
     server.set("/api/register", [this](request_pointer_t request, response_pointer_t response){
         if (!(request->method_string() == "POST" && (*request)[beast::http::field::content_type] == "application/json")) {
